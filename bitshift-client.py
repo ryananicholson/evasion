@@ -1,8 +1,23 @@
+# -*- coding: utf-8 -*-
 import socket
 import sys
 
+def shiftLeft(val):
+	if val > 127:
+		val = (val << 1) - 256 + 1
+	else:
+		val = val << 1
+	return val
+
+def shiftRight(val):
+	if (val % 2 == 1):
+		val = (val >> 1) + 128
+	else:
+		val = val >> 1
+	return val
+
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-server_address = ("172.16.0.201",4444)
+server_address = ('192.168.1.111', 4444)
 print >>sys.stderr, 'Connecting to %s, port %s' % server_address
 sock.connect(server_address)
 
@@ -12,14 +27,14 @@ try:
 		cmd = cmd.strip()
 		message = ''
 		for i in cmd:
-			tempint = ord(i) << 1
+			tempint = shiftLeft(ord(i))
 			message += chr(tempint)
 		sock.sendall(message)
 		data = sock.recv(2048)
 		message = ''
 		for i in data:
-			tempint = ord(i) >> 1
-			message += chr(tempint)
+			tempint = shiftRight(ord(i))
+			message += str(unichr(tempint))
 		print message
 
 finally:
