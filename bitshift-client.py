@@ -2,6 +2,13 @@
 import socket
 import sys
 
+if (len(sys.argv) < 3):
+	print >>sys.stderr, 'Need IP and port!'
+	quit()
+else:
+	ip = sys.argv[1]
+	port = int(sys.argv[2])
+
 def shiftLeft(val):
 	if val > 127:
 		val = (val << 1) - 256 + 1
@@ -17,7 +24,7 @@ def shiftRight(val):
 	return val
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-server_address = ('192.168.1.111', 4444)
+server_address = (ip, port)
 print >>sys.stderr, 'Connecting to %s, port %s' % server_address
 sock.connect(server_address)
 
